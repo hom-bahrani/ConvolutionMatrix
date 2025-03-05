@@ -1,8 +1,8 @@
 using Test
-using ProjectStarter
+using ConvolutionMatrix
 
-@testset "ProjectStarter Tests" begin
+@testset "ConvolutionMatrix Tests" begin
     # sprint(greet) calls greet(io::IOBuffer) behind the scenes
-    result = sprint(ProjectStarter.greet)
+    result = sprint(ConvolutionMatrix.greet)
     @test result == "Hello World!"
 end
