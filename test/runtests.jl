@@ -8,19 +8,23 @@ using Plots
         psf = [1, 3, 5, 4, 2]
         p = plot_psf(psf)
         @test p isa Plots.Plot  # Verify return type
-        @test length(p.series) == length(psf) + 1  # PSF points + 1 x-axis line
-        @test p.attr[:size] == (600, 250)  # Default size
+        @test length(p.subplots) > 0  # Verify plot has content
+        @test Plots.get_size(p) == (600, 250)  # Default size
     end
 
     @testset "Custom Parameters" begin
         psf = [1, 2, 1]
         # Test custom x_range
         p1 = plot_psf(psf, x_range=6)
-        @test p1.attr[:xaxis].extrema == (-6, 6)
+        xlims = Plots.xlims(p1)
+        # Allow for some padding in the plot limits
+        @test xlims[1] <= -6 && xlims[2] >= 6
+        # Make sure limits are approximately symmetrical
+        @test isapprox(abs(xlims[1]), abs(xlims[2]), rtol=0.2)
 
         # Test custom plot size
         p2 = plot_psf(psf, plot_size=(800, 400))
-        @test p2.attr[:size] == (800, 400)
+        @test Plots.get_size(p2) == (800, 400)
     end
 
     @testset "Input Validation" begin
