@@ -6,6 +6,7 @@ The `plot_psf` function defines a module that visualizes a filter's impulse resp
 
 When you apply convolution in signal processing, you're effectively multiplying the input signal by a convolution matrix constructed from the PSF, where each row shifts the filter's coefficients over the signal. The module validates the input PSF, assigns a color gradient for visual appeal, and then plots the PSF as a stem plot, offering an intuitive look at how the filter will influence the signal. This visualization helps you understand the underlying linear operation—where each coefficient in the PSF contributes to the overall output through linear combinations—by mapping it to a graphical representation.
 
+The functions in `convolution_matrices.jl` demonstrate how to construct different types of convolution matrices in Julia. By examining the `'full'`, `'circ'`, `'same'`, and `'valid'` cases, you see various ways to handle the edges of a signal during convolution. Each mode has its own purpose, both in traditional signal processing and in modern applications like deep learning.
 
 ## Setup
 

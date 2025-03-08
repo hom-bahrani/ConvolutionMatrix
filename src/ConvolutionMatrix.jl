@@ -14,6 +14,8 @@ using Plots.PlotMeasures: px
 # Export the functions we want to make available to users of the package
 export plot_psf
 
+include("convolution_matrices.jl")
+
 # Set default plot parameters
 default(markerstrokecolor=:auto, markersize=11, linewidth=5, label="",
  tickfontsize = 11, labelfontsize = 15, titlefontsize=18)
@@ -87,6 +89,14 @@ function main()
     
     # save the plot
     savefig(p, "psf.pdf")
+    
+    # Example of convolution matrices
+    N = 10
+    Az, Ac, As, Av = create_all_convolution_matrices(psf, N)
+    println("Full convolution matrix size: ", size(Az))
+    println("Circular convolution matrix size: ", size(Ac))
+    println("Same convolution matrix size: ", size(As))
+    println("Valid convolution matrix size: ", size(Av))
 end
 
 # Only run main if this file is run directly

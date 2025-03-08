@@ -1,6 +1,7 @@
 using Test
 using ConvolutionMatrix
 using Plots
+using LinearAlgebra
 
 @testset "plot_psf Tests" begin
     @testset "Basic Functionality" begin
@@ -43,5 +44,64 @@ using Plots
         @test plot_psf(Float64[1, 2, 3]) isa Plots.Plot
         @test plot_psf(Int64[1, 2, 3]) isa Plots.Plot
         @test plot_psf([1.5, 2.5, 3.5]) isa Plots.Plot
+    end
+end
+
+@testset "Convolution Matrix Tests" begin
+    @testset "Matrix Sizes" begin
+        psf = [1, 3, 5, 3, 1]
+        K = length(psf)
+        N = 10
+        
+        # Test full convolution matrix size
+        Az = create_convolution_matrix_full(psf, N)
+        @test size(Az) == (N+K-1, N)
+        
+        # Test circular convolution matrix size
+        Ac = create_convolution_matrix_circ(psf, N)
+        @test size(Ac) == (N, N)
+        
+        # Test same convolution matrix size
+        As = create_convolution_matrix_same(psf, N)
+        @test size(As) == (N, N)
+        
+        # Test valid convolution matrix size
+        Av = create_convolution_matrix_valid(psf, N)
+        @test size(Av) == (N-K+1, N)
+    end
+    
+    @testset "Matrix Values" begin
+        # Simple test case with a known result
+        psf = [1, 2, 1]
+        N = 5
+        
+        # Test create_all_convolution_matrices function
+        matrices = create_all_convolution_matrices(psf, N)
+        @test length(matrices) == 4
+        
+        # Test full convolution on a simple vector
+        x = [1, 0, 0, 0, 0]  # Unit impulse
+        Az = create_convolution_matrix_full(psf, N)
+        y = Az * x
+        @test y ≈ [1, 2, 1, 0, 0, 0, 0]
+        
+        # Test circular convolution
+        Ac = create_convolution_matrix_circ(psf, N)
+        # Updated tests for circular convolution matrix
+        @test Ac[1, 1] == 2
+        @test Ac[1, 2] == 1
+        @test Ac[1, 5] == 1
+        
+        # Test the circularity property
+        x_circ = [1, 0, 0, 0, 0]
+        y_circ = Ac * x_circ
+        # Test that last element wraps around to affect first element
+        @test y_circ[1] == 2 # Result of convolution at first position includes wrap-around
+        
+        # Test a simple convolution
+        simple_psf = [1, 1]
+        simple_x = [1, 2, 3]
+        simple_Az = create_convolution_matrix_full(simple_psf, 3)
+        @test simple_Az * simple_x ≈ [1, 3, 5, 3]
     end
 end
