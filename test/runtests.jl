@@ -105,3 +105,29 @@ end
         @test simple_Az * simple_x ≈ [1, 3, 5, 3]
     end
 end
+
+@testset "Matrix Visualization Tests" begin
+    psf = [1, 2, 3, 2, 1]
+    N = 8
+    
+    # Test horizontal layout visualization
+    @testset "Horizontal Layout" begin
+        combined, individuals = display_convolution_matrices(psf, N, layout=:horizontal)
+        @test combined isa Plots.Plot
+        @test length(individuals) == 4
+        @test all(p -> p isa Plots.Plot, individuals)
+    end
+    
+    # Test grid layout visualization
+    @testset "Grid Layout" begin
+        combined, individuals = display_convolution_matrices(psf, N, layout=:grid, plot_size=(600, 600))
+        @test combined isa Plots.Plot
+        @test length(individuals) == 4
+        @test all(p -> p isa Plots.Plot, individuals)
+    end
+    
+    # Test invalid layout option
+    @testset "Invalid Layout" begin
+        @test_throws ErrorException display_convolution_matrices(psf, N, layout=:invalid)
+    end
+end

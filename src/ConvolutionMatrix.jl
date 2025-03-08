@@ -97,6 +97,21 @@ function main()
     println("Circular convolution matrix size: ", size(Ac))
     println("Same convolution matrix size: ", size(As))
     println("Valid convolution matrix size: ", size(Av))
+    
+    # Display convolution matrices with different layouts
+    println("\nDisplaying convolution matrices...")
+    
+    # Horizontal layout (1×4)
+    p_horiz, individual_plots = display_convolution_matrices(psf, N, layout=:horizontal, plot_size=(1000, 200))
+    gui(p_horiz)
+    savefig(p_horiz, "conv_matrices_horizontal.pdf")
+    
+    # Grid layout (2×2)
+    p_grid, _ = display_convolution_matrices(psf, N, layout=:grid, plot_size=(600, 600))
+    gui(p_grid)
+    savefig(p_grid, "conv_matrices_grid.pdf")
+    
+    println("Done! Saved plots to PDF files.")
 end
 
 # Only run main if this file is run directly

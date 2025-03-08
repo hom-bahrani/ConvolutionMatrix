@@ -2,6 +2,11 @@ using FFTW: fft, ifft
 using FFTViews: FFTView
 using DSP: conv
 using LinearMapsAA
+using MIRTjim: jim
+using Plots: RGB, plot, @layout
+using Plots.PlotMeasures: px
+using ColorSchemes
+using LaTeXStrings
 
 """
     create_convolution_matrix_full(psf::Vector{<:Number}, N::Integer)
@@ -153,9 +158,88 @@ function create_all_convolution_matrices(psf::Vector{<:Number}, N::Integer)
     return (Az, Ac, As, Av)
 end
 
+"""
+    display_convolution_matrices(psf::Vector{<:Number}, N::Integer; 
+                                layout::Symbol=:horizontal, 
+                                plot_size::Tuple{Int,Int}=(1000,200))
+
+Visualize the four convolution matrices (full, valid, same, circular) using
+colors that match the 1D impulse response plot.
+
+# Arguments
+- `psf`: Point spread function (filter impulse response)
+- `N`: Length of the input signal
+- `layout`: `:horizontal` for 1×4 layout or `:grid` for 2×2 layout
+- `plot_size`: Size of the combined plot as (width, height)
+
+# Returns
+- A plot object containing the visualizations of the convolution matrices
+- A tuple containing individual plots for each matrix type
+"""
+function display_convolution_matrices(psf::Vector{<:Number}, N::Integer; 
+                                     layout::Symbol=:horizontal, 
+                                     plot_size::Tuple{Int,Int}=(1000,200))
+    # Create all convolution matrices
+    Az, Ac, As, Av = create_all_convolution_matrices(psf, N)
+    
+    # Create color scheme matching the PSF plot
+    K = length(psf)
+    cols = [ColorSchemes.viridis[x] for x in range(0,1,K)]
+    cmap = [RGB{Float64}(1.,1.,1.) .* 0.8; cols]  # Light gray background + PSF colors
+    
+    # Function to create matrix visualization
+    jy = (x, t, y) -> jim(x'; color=cmap, ylims=(0.5, size(x,1)+0.5), 
+                         ylabel=y, labelfontsize=12, title=t)
+    
+    # Create individual plots
+    pz = jy(Az, "'full'", L"M=N+K-1")
+    pv = jy(Av, "'valid'", L"M=N-K+1")
+    ps = jy(As, "'same'", L"M=N")
+    pc = jy(Ac, "circulant", L"M=N")
+    
+    # Combine plots according to desired layout
+    if layout == :horizontal
+        # Horizontal layout (1×4)
+        p_combined = plot(pz, pv, ps, pc; size=plot_size, layout=(1,4), left_margin = 20px)
+    elseif layout == :grid
+        # 2×2 grid layout
+        l = @layout [
+            a{0.5w} b{0.5w}
+            c{0.5w} d{0.5w}
+        ]
+        p_combined = plot(pz, pv, ps, pc; layout=l, size=plot_size)
+    else
+        error("Invalid layout option. Use :horizontal or :grid")
+    end
+    
+    return p_combined, (pz, pv, ps, pc)
+end
+
+"""
+    save_convolution_matrix_plots(plots::Tuple, filenames::Tuple)
+
+Save the convolution matrix plots to files.
+
+# Arguments
+- `plots`: Tuple of plot objects (combined, full, valid, same, circ)
+- `filenames`: Tuple of filenames for each plot
+"""
+function save_convolution_matrix_plots(plots::Tuple, filenames::Tuple)
+    combined, (pz, pv, ps, pc) = plots
+    combined_filename, full_filename, valid_filename, same_filename, circ_filename = filenames
+    
+    savefig(combined, combined_filename)
+    savefig(pz, full_filename)
+    savefig(pv, valid_filename)
+    savefig(ps, same_filename)
+    savefig(pc, circ_filename)
+end
+
 # Export the functions
 export create_convolution_matrix_full
 export create_convolution_matrix_circ
 export create_convolution_matrix_same
 export create_convolution_matrix_valid
-export create_all_convolution_matrices 
+export create_all_convolution_matrices
+export display_convolution_matrices
+export save_convolution_matrix_plots 
