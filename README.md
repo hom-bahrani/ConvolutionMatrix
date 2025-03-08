@@ -2,17 +2,35 @@
 
 [![CI](https://github.com/hom-bahrani/ConvolutionMatrix/actions/workflows/ci.yml/badge.svg)](https://github.com/hom-bahrani/ConvolutionMatrix/actions/workflows/ci.yml)
 
-The `plot_psf` function defines a module that visualizes a filter's impulse response (or PSF), which in linear algebra terms is a vector of coefficients that represents a linear transformation via convolution. 
+## Introduction
 
-When you apply convolution in signal processing, you're effectively multiplying the input signal by a convolution matrix constructed from the PSF, where each row shifts the filter's coefficients over the signal. The module validates the input PSF, assigns a color gradient for visual appeal, and then plots the PSF as a stem plot, offering an intuitive look at how the filter will influence the signal. This visualization helps you understand the underlying linear operation—where each coefficient in the PSF contributes to the overall output through linear combinations—by mapping it to a graphical representation.
+The ConvolutionMatrix package provides tools for visualizing and understanding convolution operations through the lens of linear algebra. Convolution is a fundamental operation in signal processing, image processing, and deep learning that applies a filter (or kernel) to an input signal.
 
-The functions in `convolution_matrices.jl` demonstrate how to construct different types of convolution matrices in Julia. By examining the `'full'`, `'circ'`, `'same'`, and `'valid'` cases, you see various ways to handle the edges of a signal during convolution. Each mode has its own purpose, both in traditional signal processing and in modern applications like deep learning.
+This package offers:
+
+- **PSF Visualization**: Plot point spread functions (PSFs) or filter impulse responses with customizable parameters using `plot_psf`
+- **Convolution Matrix Creation**: Generate different types of convolution matrices (`full`, `same`, `valid`, and `circular`) that represent convolution operations as matrix multiplication
+- **Matrix Visualization**: Display these matrices with color-coding to understand how filters interact with signals
+
+By representing convolution as matrix multiplication, this package helps bridge the gap between signal processing concepts and linear algebra, making it easier to understand how convolution operations work internally.
+
+### Key Features:
+
+- Create and visualize the four main types of convolution matrices:
+  - `full`: Includes all positions where filter and signal overlap
+  - `same`: Maintains the same output size as input
+  - `valid`: Includes only positions where filter completely overlaps with signal
+  - `circular`: Implements periodic boundary conditions
+
+- Visualize these matrices with color schemes that match the filter representation
+- Display matrices in different layout options (horizontal or grid)
+- Comprehensive test suite ensuring correct functionality
 
 ## Setup
 
 ### 1. Activate Your Project Environment
 
-Make sure you’re in the directory of your project, then launch Julia and activate the project environment:
+Make sure you're in the directory of your project, then launch Julia and activate the project environment:
 
 ```julia
 using Pkg
